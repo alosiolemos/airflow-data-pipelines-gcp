@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="1110" viewBox="0 0 1280 1110" role="img" aria-labelledby="title desc">
+<title id="title">Exemplos de alertas de sucesso e falha no Slack</title>
+<desc id="desc">Prévia ilustrativa com dados fictícios, gerada a partir da função Python. Não é captura do Slack.</desc>
+<rect width="1280" height="1110" fill="#111827"/>
+<g font-family="Segoe UI, Arial, sans-serif" fill="#f8fafc">
+<text x="48" y="60" font-size="30" font-weight="700">Monitor Airflow → Slack</text>
+<text x="48" y="96" font-size="18" fill="#cbd5e1">Prévia ilustrativa · dados fictícios · nenhum envio realizado</text>
+<rect x="40" y="130" width="1200" height="435" rx="16" fill="#20242c" stroke="#475569"/>
+<rect x="40" y="130" width="7" height="435" rx="3" fill="#34d399"/>
+<text x="70" y="173" font-size="20" font-weight="700">Airflow Monitor</text>
+<text x="290" y="173" font-size="17" fill="#94a3b8">#demo-airflow · exemplo sucesso</text>
+<text x="70" y="220" font-size="23" font-weight="700" fill="#34d399">✓ MONITORAMENTO DE TAREFAS</text>
+<text x="70" y="263" font-size="18" fill="#e2e8f0">• Pipeline: demo_task_monitor_slack</text>
+<text x="70" y="302" font-size="18" fill="#e2e8f0">• Tarefa: monitor_group.watch_demo_mysql_nps_parallel_finish</text>
+<text x="70" y="341" font-size="18" fill="#e2e8f0">• Status: CONCLUÍDO</text>
+<text x="70" y="380" font-size="18" fill="#e2e8f0">• Execução: 21/10/2026 10:00</text>
+<text x="70" y="419" font-size="18" fill="#e2e8f0">• Duração: 2.50 min</text>
+<text x="70" y="458" font-size="18" fill="#e2e8f0">• Tentativa: 1/1</text>
+<text x="70" y="497" font-size="18" fill="#e2e8f0">• Logs: https://airflow.example.com/logs/demo-monitor-success</text>
+<rect x="40" y="595" width="1200" height="435" rx="16" fill="#20242c" stroke="#475569"/>
+<rect x="40" y="595" width="7" height="435" rx="3" fill="#fb7185"/>
+<text x="70" y="638" font-size="20" font-weight="700">Airflow Monitor</text>
+<text x="290" y="638" font-size="17" fill="#94a3b8">#demo-airflow · exemplo falha</text>
+<text x="70" y="685" font-size="23" font-weight="700" fill="#fb7185">× MONITORAMENTO DE TAREFAS</text>
+<text x="70" y="728" font-size="18" fill="#e2e8f0">• Pipeline: demo_task_monitor_slack</text>
+<text x="70" y="767" font-size="18" fill="#e2e8f0">• Tarefa: monitor_group.watch_demo_mysql_nps_parallel_finish</text>
+<text x="70" y="806" font-size="18" fill="#e2e8f0">• Status: FALHA</text>
+<text x="70" y="845" font-size="18" fill="#e2e8f0">• Execução: 21/10/2026 10:00</text>
+<text x="70" y="884" font-size="18" fill="#e2e8f0">• Duração: 1.00 min</text>
+<text x="70" y="923" font-size="18" fill="#e2e8f0">• Tentativa: 2/3</text>
+<text x="70" y="962" font-size="18" fill="#e2e8f0">• Logs: https://airflow.example.com/logs/demo-monitor-failed</text>
+<text x="48" y="1080" font-size="17" fill="#94a3b8">O callback retrata o sensor do monitor; consulte os logs para diagnosticar a tarefa externa.</text>
+</g></svg>

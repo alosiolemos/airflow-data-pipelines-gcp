@@ -1,0 +1,12 @@
+[
+  {
+    "scenario": "success",
+    "channel": "#demo-airflow",
+    "message": ":white_check_mark: *MONITORAMENTO DE TAREFAS* :white_check_mark:\n• *Pipeline*: `demo_task_monitor_slack`\n• *Tarefa*: `monitor_group.watch_demo_mysql_nps_parallel_finish`\n• *Status*: CONCLUÍDO\n• *Execução*: 21/10/2026 10:00\n• *Duração*: 2.50 min\n• *Tentativa*: 1/1\n• *Logs*: https://airflow.example.com/logs/demo-monitor-success"
+  },
+  {
+    "scenario": "failed",
+    "channel": "#demo-airflow",
+    "message": ":x: *MONITORAMENTO DE TAREFAS* :x:\n• *Pipeline*: `demo_task_monitor_slack`\n• *Tarefa*: `monitor_group.watch_demo_mysql_nps_parallel_finish`\n• *Status*: FALHA\n• *Execução*: 21/10/2026 10:00\n• *Duração*: 1.00 min\n• *Tentativa*: 2/3\n• *Logs*: https://airflow.example.com/logs/demo-monitor-failed"
+  }
+]

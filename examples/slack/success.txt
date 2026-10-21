@@ -1,0 +1,8 @@
+:white_check_mark: *MONITORAMENTO DE TAREFAS* :white_check_mark:
+• *Pipeline*: `demo_task_monitor_slack`
+• *Tarefa*: `monitor_group.watch_demo_mysql_nps_parallel_finish`
+• *Status*: CONCLUÍDO
+• *Execução*: 21/10/2026 10:00
+• *Duração*: 2.50 min
+• *Tentativa*: 1/1
+• *Logs*: https://airflow.example.com/logs/demo-monitor-success

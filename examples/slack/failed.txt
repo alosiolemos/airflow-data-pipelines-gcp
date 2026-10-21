@@ -1,0 +1,8 @@
+:x: *MONITORAMENTO DE TAREFAS* :x:
+• *Pipeline*: `demo_task_monitor_slack`
+• *Tarefa*: `monitor_group.watch_demo_mysql_nps_parallel_finish`
+• *Status*: FALHA
+• *Execução*: 21/10/2026 10:00
+• *Duração*: 1.00 min
+• *Tentativa*: 2/3
+• *Logs*: https://airflow.example.com/logs/demo-monitor-failed
