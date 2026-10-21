@@ -1,0 +1,21 @@
+SELECT 
+                uuid,
+                name,	
+                email,
+                phone,
+                last_interaction_unified_score,
+                last_interaction_date,
+                created_at,
+                modified_at,
+                deleted_at,
+                TO_CHAR(TO_TIMESTAMP(created_at), 'YYYY-MM-DD HH24:MI') AS created_dt,
+                TO_CHAR(TO_TIMESTAMP(modified_at), 'YYYY-MM-DD HH24:MI') AS modified_dt,
+                TO_CHAR(TO_TIMESTAMP(deleted_at), 'YYYY-MM-DD HH24:MI') AS deleted_dt,
+                TO_CHAR(CURRENT_TIMESTAMP, 'YYYY-MM-DD HH24:MI') AS extracted_at
+            FROM 
+                demo_schema.customers
+        	WHERE 
+                DATE(TO_TIMESTAMP(created_at) AT TIME ZONE 'America/Sao_Paulo') BETWEEN 
+                    (CURRENT_DATE - INTERVAL '30 day') AND 
+                    (CURRENT_DATE - INTERVAL '0 day')
+        ;

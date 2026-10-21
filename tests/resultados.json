@@ -1,0 +1,7 @@
+{
+  "tests": 17,
+  "failures": 0,
+  "errors": 0,
+  "status": "pass",
+  "scope": "Python compilado, AST e funções isoladas com doubles; sem Airflow ou serviços externos"
+}

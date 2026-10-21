@@ -1,0 +1,1 @@
+apache-airflow[google,mysql,postgres,slack]==2.10.4

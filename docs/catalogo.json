@@ -1,0 +1,1650 @@
+[
+  {
+    "slug": "mysql_nps_parallel",
+    "title": "MySQL NPS: extração paralela e carga append",
+    "dag_id": "demo_mysql_nps_parallel",
+    "original_schedule": [
+      "'@daily'"
+    ],
+    "tasks": [
+      {
+        "task": "init",
+        "operator": "EmptyOperator",
+        "parameters": {}
+      },
+      {
+        "task": "campaign_mysql_to_gcs",
+        "operator": "MySQLToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "campaign_campaign_group_mysql_to_gcs",
+        "operator": "MySQLToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "campaign_group_mysql_to_gcs",
+        "operator": "MySQLToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "survey_mysql_to_gcs",
+        "operator": "MySQLToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "question_mysql_to_gcs",
+        "operator": "MySQLToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "question_answer_mysql_to_gcs",
+        "operator": "MySQLToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "question_answer_nps_mysql_to_gcs",
+        "operator": "MySQLToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "load_campain_data_to_bq",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_APPEND'"
+        }
+      },
+      {
+        "task": "load_campaign_campaign_group_to_bq",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_APPEND'"
+        }
+      },
+      {
+        "task": "load_campaign_group_to_bq",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_APPEND'"
+        }
+      },
+      {
+        "task": "load_survey_to_bq",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_APPEND'"
+        }
+      },
+      {
+        "task": "load_question_to_bq",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_APPEND'"
+        }
+      },
+      {
+        "task": "load_question_answer_to_bq",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_APPEND'"
+        }
+      },
+      {
+        "task": "load_question_answer_nps_to_bq",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_APPEND'"
+        }
+      },
+      {
+        "task": "finish",
+        "operator": "EmptyOperator",
+        "parameters": {}
+      }
+    ],
+    "edges": [
+      [
+        "init",
+        "campaign_mysql_to_gcs"
+      ],
+      [
+        "init",
+        "campaign_campaign_group_mysql_to_gcs"
+      ],
+      [
+        "init",
+        "campaign_group_mysql_to_gcs"
+      ],
+      [
+        "init",
+        "survey_mysql_to_gcs"
+      ],
+      [
+        "init",
+        "question_mysql_to_gcs"
+      ],
+      [
+        "init",
+        "question_answer_mysql_to_gcs"
+      ],
+      [
+        "init",
+        "question_answer_nps_mysql_to_gcs"
+      ],
+      [
+        "campaign_mysql_to_gcs",
+        "load_campain_data_to_bq"
+      ],
+      [
+        "campaign_campaign_group_mysql_to_gcs",
+        "load_campaign_campaign_group_to_bq"
+      ],
+      [
+        "campaign_group_mysql_to_gcs",
+        "load_campaign_group_to_bq"
+      ],
+      [
+        "survey_mysql_to_gcs",
+        "load_survey_to_bq"
+      ],
+      [
+        "question_mysql_to_gcs",
+        "load_question_to_bq"
+      ],
+      [
+        "question_answer_mysql_to_gcs",
+        "load_question_answer_to_bq"
+      ],
+      [
+        "question_answer_nps_mysql_to_gcs",
+        "load_question_answer_nps_to_bq"
+      ],
+      [
+        "load_campain_data_to_bq",
+        "finish"
+      ],
+      [
+        "load_campaign_campaign_group_to_bq",
+        "finish"
+      ],
+      [
+        "load_campaign_group_to_bq",
+        "finish"
+      ],
+      [
+        "load_survey_to_bq",
+        "finish"
+      ],
+      [
+        "load_question_to_bq",
+        "finish"
+      ],
+      [
+        "load_question_answer_to_bq",
+        "finish"
+      ],
+      [
+        "load_question_answer_nps_to_bq",
+        "finish"
+      ]
+    ],
+    "sql_files": 7
+  },
+  {
+    "slug": "mysql_nps_merge",
+    "title": "MySQL NPS: carga temporária, MERGE e Teams",
+    "dag_id": "demo_mysql_nps_merge",
+    "original_schedule": [
+      "'0 1 * * *'"
+    ],
+    "tasks": [
+      {
+        "task": "init",
+        "operator": "EmptyOperator",
+        "parameters": {}
+      },
+      {
+        "task": "campaign_mysql_to_gcs",
+        "operator": "MySQLToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "load_campain_data_to_bq",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_TRUNCATE'"
+        }
+      },
+      {
+        "task": "organization_mysql_to_gcs",
+        "operator": "MySQLToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "load_organization_data_to_bq",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_TRUNCATE'"
+        }
+      },
+      {
+        "task": "campaign_campaign_group_mysql_to_gcs",
+        "operator": "MySQLToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "load_campaign_campaign_group_to_bq",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_TRUNCATE'"
+        }
+      },
+      {
+        "task": "campaign_group_mysql_to_gcs",
+        "operator": "MySQLToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "load_campaign_group_to_bq",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_TRUNCATE'"
+        }
+      },
+      {
+        "task": "survey_mysql_to_gcs",
+        "operator": "MySQLToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "load_survey_to_bq",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_TRUNCATE'"
+        }
+      },
+      {
+        "task": "question_mysql_to_gcs",
+        "operator": "MySQLToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "load_question_to_bq",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_TRUNCATE'"
+        }
+      },
+      {
+        "task": "question_answer_mysql_to_gcs",
+        "operator": "MySQLToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "load_question_answer_to_bq_temp",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_TRUNCATE'"
+        }
+      },
+      {
+        "task": "merge_question_answer",
+        "operator": "BigQueryInsertJobOperator",
+        "parameters": {}
+      },
+      {
+        "task": "question_answer_nps_mysql_to_gcs",
+        "operator": "MySQLToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "load_question_answer_nps_to_bq_temp",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_TRUNCATE'"
+        }
+      },
+      {
+        "task": "merge_question_answer_nps",
+        "operator": "BigQueryInsertJobOperator",
+        "parameters": {}
+      },
+      {
+        "task": "post_sale_dispatch_mysql_to_gcs",
+        "operator": "MySQLToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "load_post_sale_dispatch_to_bq",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_TRUNCATE'"
+        }
+      },
+      {
+        "task": "merge_post_sale_dispatch_nps",
+        "operator": "BigQueryInsertJobOperator",
+        "parameters": {}
+      },
+      {
+        "task": "post_sale_action_mysql_to_gcs",
+        "operator": "MySQLToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "load_post_sale_action_to_bq",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_TRUNCATE'"
+        }
+      },
+      {
+        "task": "merge_post_sale_action_nps",
+        "operator": "BigQueryInsertJobOperator",
+        "parameters": {}
+      },
+      {
+        "task": "customers_mysql_to_gcs",
+        "operator": "MySQLToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "load_customer_to_bq",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_TRUNCATE'"
+        }
+      },
+      {
+        "task": "merge_customer_nps",
+        "operator": "BigQueryInsertJobOperator",
+        "parameters": {}
+      },
+      {
+        "task": "schedule_mysql_to_gcs",
+        "operator": "MySQLToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "load_schedule_to_bq",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_TRUNCATE'"
+        }
+      },
+      {
+        "task": "merge_schedule",
+        "operator": "BigQueryInsertJobOperator",
+        "parameters": {}
+      },
+      {
+        "task": "final_status",
+        "operator": "EmptyOperator",
+        "parameters": {
+          "trigger_rule": "TriggerRule.ALL_DONE"
+        }
+      }
+    ],
+    "edges": [
+      [
+        "init",
+        "campaign_mysql_to_gcs"
+      ],
+      [
+        "campaign_mysql_to_gcs",
+        "load_campain_data_to_bq"
+      ],
+      [
+        "campaign_campaign_group_mysql_to_gcs",
+        "load_campaign_campaign_group_to_bq"
+      ],
+      [
+        "organization_mysql_to_gcs",
+        "load_organization_data_to_bq"
+      ],
+      [
+        "campaign_group_mysql_to_gcs",
+        "load_campaign_group_to_bq"
+      ],
+      [
+        "survey_mysql_to_gcs",
+        "load_survey_to_bq"
+      ],
+      [
+        "question_mysql_to_gcs",
+        "load_question_to_bq"
+      ],
+      [
+        "load_question_answer_to_bq_temp",
+        "merge_question_answer"
+      ],
+      [
+        "load_question_answer_nps_to_bq_temp",
+        "merge_question_answer_nps"
+      ],
+      [
+        "load_post_sale_dispatch_to_bq",
+        "merge_post_sale_dispatch_nps"
+      ],
+      [
+        "load_post_sale_action_to_bq",
+        "merge_post_sale_action_nps"
+      ],
+      [
+        "load_customer_to_bq",
+        "merge_customer_nps"
+      ],
+      [
+        "load_schedule_to_bq",
+        "merge_schedule"
+      ],
+      [
+        "merge_schedule",
+        "final_status"
+      ],
+      [
+        "load_campain_data_to_bq",
+        "campaign_campaign_group_mysql_to_gcs"
+      ],
+      [
+        "load_campaign_campaign_group_to_bq",
+        "organization_mysql_to_gcs"
+      ],
+      [
+        "load_organization_data_to_bq",
+        "campaign_group_mysql_to_gcs"
+      ],
+      [
+        "load_campaign_group_to_bq",
+        "survey_mysql_to_gcs"
+      ],
+      [
+        "load_survey_to_bq",
+        "question_mysql_to_gcs"
+      ],
+      [
+        "question_answer_mysql_to_gcs",
+        "load_question_answer_to_bq_temp"
+      ],
+      [
+        "question_answer_nps_mysql_to_gcs",
+        "load_question_answer_nps_to_bq_temp"
+      ],
+      [
+        "post_sale_dispatch_mysql_to_gcs",
+        "load_post_sale_dispatch_to_bq"
+      ],
+      [
+        "post_sale_action_mysql_to_gcs",
+        "load_post_sale_action_to_bq"
+      ],
+      [
+        "customers_mysql_to_gcs",
+        "load_customer_to_bq"
+      ],
+      [
+        "schedule_mysql_to_gcs",
+        "load_schedule_to_bq"
+      ],
+      [
+        "load_question_to_bq",
+        "question_answer_mysql_to_gcs"
+      ],
+      [
+        "merge_question_answer",
+        "question_answer_nps_mysql_to_gcs"
+      ],
+      [
+        "merge_question_answer_nps",
+        "post_sale_dispatch_mysql_to_gcs"
+      ],
+      [
+        "merge_post_sale_dispatch_nps",
+        "post_sale_action_mysql_to_gcs"
+      ],
+      [
+        "merge_post_sale_action_nps",
+        "customers_mysql_to_gcs"
+      ],
+      [
+        "merge_customer_nps",
+        "schedule_mysql_to_gcs"
+      ]
+    ],
+    "sql_files": 18
+  },
+  {
+    "slug": "postgres_cxm_pipeline",
+    "title": "PostgreSQL CXM: verificações, extrações, MERGE e Slack",
+    "dag_id": "demo_postgres_cxm_pipeline",
+    "original_schedule": [
+      "'0 1 * * *'"
+    ],
+    "tasks": [
+      {
+        "task": "init",
+        "operator": "EmptyOperator",
+        "parameters": {}
+      },
+      {
+        "task": "check_data_surveys",
+        "operator": "BranchPythonOperator",
+        "parameters": {}
+      },
+      {
+        "task": "pause_task_surveys",
+        "operator": "EmptyOperator",
+        "parameters": {
+          "trigger_rule": "'all_done'"
+        }
+      },
+      {
+        "task": "extract_surveys",
+        "operator": "PostgresToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "load_surveys_to_bigquery",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_TRUNCATE'"
+        }
+      },
+      {
+        "task": "continue_after_surveys",
+        "operator": "DummyOperator",
+        "parameters": {
+          "trigger_rule": "'all_done'"
+        }
+      },
+      {
+        "task": "check_data_metadata",
+        "operator": "BranchPythonOperator",
+        "parameters": {}
+      },
+      {
+        "task": "pause_task_metadata",
+        "operator": "DummyOperator",
+        "parameters": {}
+      },
+      {
+        "task": "extract_metadata",
+        "operator": "PostgresToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "load_metadata_to_bigquery",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_TRUNCATE'"
+        }
+      },
+      {
+        "task": "continue_after_metadata",
+        "operator": "DummyOperator",
+        "parameters": {
+          "trigger_rule": "'all_done'"
+        }
+      },
+      {
+        "task": "check_data_surveys_items",
+        "operator": "BranchPythonOperator",
+        "parameters": {}
+      },
+      {
+        "task": "pause_task_surveys_items",
+        "operator": "DummyOperator",
+        "parameters": {}
+      },
+      {
+        "task": "extract_surveys_items",
+        "operator": "PostgresToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "load_surveys_items_to_bigquery",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_TRUNCATE'"
+        }
+      },
+      {
+        "task": "continue_after_surveys_items",
+        "operator": "DummyOperator",
+        "parameters": {
+          "trigger_rule": "'all_done'"
+        }
+      },
+      {
+        "task": "check_data_customers",
+        "operator": "BranchPythonOperator",
+        "parameters": {}
+      },
+      {
+        "task": "pause_task_customers",
+        "operator": "DummyOperator",
+        "parameters": {}
+      },
+      {
+        "task": "extract_customers",
+        "operator": "PostgresToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "load_customers_to_bigquery",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_APPEND'"
+        }
+      },
+      {
+        "task": "merge_customer",
+        "operator": "BigQueryInsertJobOperator",
+        "parameters": {}
+      },
+      {
+        "task": "continue_after_customers",
+        "operator": "DummyOperator",
+        "parameters": {
+          "trigger_rule": "'all_done'"
+        }
+      },
+      {
+        "task": "check_data_customer_metadata",
+        "operator": "BranchPythonOperator",
+        "parameters": {}
+      },
+      {
+        "task": "pause_task_customer_metadata",
+        "operator": "DummyOperator",
+        "parameters": {}
+      },
+      {
+        "task": "extract_customer_metadata",
+        "operator": "PostgresToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "load_customer_metadata_to_bigquery",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_TRUNCATE'"
+        }
+      },
+      {
+        "task": "merge_customer_metadata",
+        "operator": "BigQueryInsertJobOperator",
+        "parameters": {}
+      },
+      {
+        "task": "continue_after_customer_metadata",
+        "operator": "DummyOperator",
+        "parameters": {
+          "trigger_rule": "'all_done'"
+        }
+      },
+      {
+        "task": "check_data_distributions",
+        "operator": "BranchPythonOperator",
+        "parameters": {}
+      },
+      {
+        "task": "pause_task_distributions",
+        "operator": "DummyOperator",
+        "parameters": {}
+      },
+      {
+        "task": "extract_distributions",
+        "operator": "PostgresToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "load_distributions_to_bigquery",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_APPEND'"
+        }
+      },
+      {
+        "task": "continue_after_distributions",
+        "operator": "DummyOperator",
+        "parameters": {
+          "trigger_rule": "'all_done'"
+        }
+      },
+      {
+        "task": "check_data_interaction_metadata",
+        "operator": "BranchPythonOperator",
+        "parameters": {}
+      },
+      {
+        "task": "pause_task_interaction_metadata",
+        "operator": "DummyOperator",
+        "parameters": {}
+      },
+      {
+        "task": "extract_interaction_metadata",
+        "operator": "PostgresToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "load_interaction_metadata_temp",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_TRUNCATE'"
+        }
+      },
+      {
+        "task": "merge_interaction_metadata",
+        "operator": "BigQueryInsertJobOperator",
+        "parameters": {}
+      },
+      {
+        "task": "continue_after_interaction_metadata",
+        "operator": "DummyOperator",
+        "parameters": {
+          "trigger_rule": "'all_done'"
+        }
+      },
+      {
+        "task": "check_data_interaction_answers",
+        "operator": "BranchPythonOperator",
+        "parameters": {}
+      },
+      {
+        "task": "pause_task_interaction_answers",
+        "operator": "DummyOperator",
+        "parameters": {}
+      },
+      {
+        "task": "extract_interaction_answers",
+        "operator": "PostgresToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "load_interaction_answers_temp",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_TRUNCATE'"
+        }
+      },
+      {
+        "task": "merge_interactions_answers",
+        "operator": "BigQueryInsertJobOperator",
+        "parameters": {}
+      },
+      {
+        "task": "continue_after_interaction_answers",
+        "operator": "DummyOperator",
+        "parameters": {
+          "trigger_rule": "'all_done'"
+        }
+      },
+      {
+        "task": "check_data_interactions",
+        "operator": "BranchPythonOperator",
+        "parameters": {}
+      },
+      {
+        "task": "pause_task_interactions",
+        "operator": "DummyOperator",
+        "parameters": {}
+      },
+      {
+        "task": "extract_interactions",
+        "operator": "PostgresToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "load_interactions_temp",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_TRUNCATE'"
+        }
+      },
+      {
+        "task": "merge_interactions",
+        "operator": "BigQueryInsertJobOperator",
+        "parameters": {}
+      },
+      {
+        "task": "continue_after_interactions",
+        "operator": "DummyOperator",
+        "parameters": {
+          "trigger_rule": "'all_done'"
+        }
+      },
+      {
+        "task": "creat_metadata_pivot",
+        "operator": "BigQueryInsertJobOperator",
+        "parameters": {}
+      },
+      {
+        "task": "continue_after_metadata_pivot",
+        "operator": "DummyOperator",
+        "parameters": {
+          "trigger_rule": "'all_done'"
+        }
+      },
+      {
+        "task": "create_customer_metadata_pivot",
+        "operator": "BigQueryInsertJobOperator",
+        "parameters": {}
+      },
+      {
+        "task": "final_status",
+        "operator": "EmptyOperator",
+        "parameters": {
+          "trigger_rule": "TriggerRule.ALL_DONE"
+        }
+      }
+    ],
+    "edges": [
+      [
+        "init",
+        "check_data_surveys"
+      ],
+      [
+        "check_data_surveys",
+        "pause_task_surveys"
+      ],
+      [
+        "check_data_surveys",
+        "extract_surveys"
+      ],
+      [
+        "extract_surveys",
+        "load_surveys_to_bigquery"
+      ],
+      [
+        "load_surveys_to_bigquery",
+        "continue_after_surveys"
+      ],
+      [
+        "pause_task_surveys",
+        "continue_after_surveys"
+      ],
+      [
+        "continue_after_surveys",
+        "check_data_customer_metadata"
+      ],
+      [
+        "check_data_customer_metadata",
+        "pause_task_customer_metadata"
+      ],
+      [
+        "check_data_customer_metadata",
+        "extract_customer_metadata"
+      ],
+      [
+        "merge_customer_metadata",
+        "continue_after_customer_metadata"
+      ],
+      [
+        "pause_task_customer_metadata",
+        "continue_after_customer_metadata"
+      ],
+      [
+        "continue_after_customer_metadata",
+        "check_data_customers"
+      ],
+      [
+        "check_data_customers",
+        "pause_task_customers"
+      ],
+      [
+        "check_data_customers",
+        "extract_customers"
+      ],
+      [
+        "merge_customer",
+        "continue_after_customers"
+      ],
+      [
+        "pause_task_customers",
+        "continue_after_customers"
+      ],
+      [
+        "continue_after_customers",
+        "check_data_metadata"
+      ],
+      [
+        "check_data_metadata",
+        "pause_task_metadata"
+      ],
+      [
+        "check_data_metadata",
+        "extract_metadata"
+      ],
+      [
+        "extract_metadata",
+        "load_metadata_to_bigquery"
+      ],
+      [
+        "load_metadata_to_bigquery",
+        "continue_after_metadata"
+      ],
+      [
+        "pause_task_metadata",
+        "continue_after_metadata"
+      ],
+      [
+        "continue_after_metadata",
+        "check_data_surveys_items"
+      ],
+      [
+        "check_data_surveys_items",
+        "pause_task_surveys_items"
+      ],
+      [
+        "check_data_surveys_items",
+        "extract_surveys_items"
+      ],
+      [
+        "extract_surveys_items",
+        "load_surveys_items_to_bigquery"
+      ],
+      [
+        "load_surveys_items_to_bigquery",
+        "continue_after_surveys_items"
+      ],
+      [
+        "pause_task_surveys_items",
+        "continue_after_surveys_items"
+      ],
+      [
+        "continue_after_surveys_items",
+        "check_data_distributions"
+      ],
+      [
+        "check_data_distributions",
+        "pause_task_distributions"
+      ],
+      [
+        "check_data_distributions",
+        "extract_distributions"
+      ],
+      [
+        "extract_distributions",
+        "load_distributions_to_bigquery"
+      ],
+      [
+        "load_distributions_to_bigquery",
+        "continue_after_distributions"
+      ],
+      [
+        "pause_task_distributions",
+        "continue_after_distributions"
+      ],
+      [
+        "continue_after_distributions",
+        "check_data_interaction_metadata"
+      ],
+      [
+        "check_data_interaction_metadata",
+        "pause_task_interaction_metadata"
+      ],
+      [
+        "check_data_interaction_metadata",
+        "extract_interaction_metadata"
+      ],
+      [
+        "merge_interaction_metadata",
+        "continue_after_interaction_metadata"
+      ],
+      [
+        "pause_task_interaction_metadata",
+        "continue_after_interaction_metadata"
+      ],
+      [
+        "continue_after_interaction_metadata",
+        "check_data_interaction_answers"
+      ],
+      [
+        "check_data_interaction_answers",
+        "pause_task_interaction_answers"
+      ],
+      [
+        "check_data_interaction_answers",
+        "extract_interaction_answers"
+      ],
+      [
+        "merge_interactions_answers",
+        "continue_after_interaction_answers"
+      ],
+      [
+        "pause_task_interaction_answers",
+        "continue_after_interaction_answers"
+      ],
+      [
+        "continue_after_interaction_answers",
+        "check_data_interactions"
+      ],
+      [
+        "check_data_interactions",
+        "pause_task_interactions"
+      ],
+      [
+        "check_data_interactions",
+        "extract_interactions"
+      ],
+      [
+        "merge_interactions",
+        "continue_after_interactions"
+      ],
+      [
+        "pause_task_interactions",
+        "continue_after_interactions"
+      ],
+      [
+        "creat_metadata_pivot",
+        "continue_after_metadata_pivot"
+      ],
+      [
+        "create_customer_metadata_pivot",
+        "final_status"
+      ],
+      [
+        "load_customer_metadata_to_bigquery",
+        "merge_customer_metadata"
+      ],
+      [
+        "load_customers_to_bigquery",
+        "merge_customer"
+      ],
+      [
+        "load_interaction_metadata_temp",
+        "merge_interaction_metadata"
+      ],
+      [
+        "load_interaction_answers_temp",
+        "merge_interactions_answers"
+      ],
+      [
+        "load_interactions_temp",
+        "merge_interactions"
+      ],
+      [
+        "continue_after_interactions",
+        "creat_metadata_pivot"
+      ],
+      [
+        "continue_after_metadata_pivot",
+        "create_customer_metadata_pivot"
+      ],
+      [
+        "extract_customer_metadata",
+        "load_customer_metadata_to_bigquery"
+      ],
+      [
+        "extract_customers",
+        "load_customers_to_bigquery"
+      ],
+      [
+        "extract_interaction_metadata",
+        "load_interaction_metadata_temp"
+      ],
+      [
+        "extract_interaction_answers",
+        "load_interaction_answers_temp"
+      ],
+      [
+        "extract_interactions",
+        "load_interactions_temp"
+      ]
+    ],
+    "sql_files": 25
+  },
+  {
+    "slug": "postgres_metadata_pivot",
+    "title": "PostgreSQL: pivot de metadados e MERGE",
+    "dag_id": "demo_postgres_metadata_pivot",
+    "original_schedule": [
+      "'0 4 * * *'"
+    ],
+    "tasks": [
+      {
+        "task": "init",
+        "operator": "EmptyOperator",
+        "parameters": {}
+      },
+      {
+        "task": "extract_metadata_pivot",
+        "operator": "PostgresToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "load_metadata_pivot_to_bigquery",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_TRUNCATE'"
+        }
+      },
+      {
+        "task": "merge_metadata_pivot",
+        "operator": "BigQueryInsertJobOperator",
+        "parameters": {}
+      }
+    ],
+    "edges": [
+      [
+        "init",
+        "extract_metadata_pivot"
+      ],
+      [
+        "load_metadata_pivot_to_bigquery",
+        "merge_metadata_pivot"
+      ],
+      [
+        "extract_metadata_pivot",
+        "load_metadata_pivot_to_bigquery"
+      ]
+    ],
+    "sql_files": 2
+  },
+  {
+    "slug": "postgres_metadata_branching",
+    "title": "PostgreSQL: ramificações por disponibilidade de dados",
+    "dag_id": "demo_postgres_metadata_branching",
+    "original_schedule": [
+      "'0 4 * * *'"
+    ],
+    "tasks": [
+      {
+        "task": "init",
+        "operator": "EmptyOperator",
+        "parameters": {}
+      },
+      {
+        "task": "check_data_metadata",
+        "operator": "BranchPythonOperator",
+        "parameters": {}
+      },
+      {
+        "task": "pause_task_metadata",
+        "operator": "DummyOperator",
+        "parameters": {}
+      },
+      {
+        "task": "extract_metadata",
+        "operator": "PostgresToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "load_metadata_to_bigquery",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_APPEND'"
+        }
+      },
+      {
+        "task": "continue_after_metadata",
+        "operator": "DummyOperator",
+        "parameters": {
+          "trigger_rule": "'all_done'"
+        }
+      },
+      {
+        "task": "check_data_interaction_metadata",
+        "operator": "BranchPythonOperator",
+        "parameters": {}
+      },
+      {
+        "task": "pause_task_interaction_metadata",
+        "operator": "DummyOperator",
+        "parameters": {}
+      },
+      {
+        "task": "extract_interaction_metadata",
+        "operator": "PostgresToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "load_interaction_metadata_to_bigquery",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_APPEND'"
+        }
+      },
+      {
+        "task": "continue_after_interaction_metadata",
+        "operator": "DummyOperator",
+        "parameters": {
+          "trigger_rule": "'all_done'"
+        }
+      },
+      {
+        "task": "check_data_metadata_pivot",
+        "operator": "BranchPythonOperator",
+        "parameters": {}
+      },
+      {
+        "task": "pause_task_metadata_pivot",
+        "operator": "DummyOperator",
+        "parameters": {}
+      },
+      {
+        "task": "extract_metadata_pivot",
+        "operator": "PostgresToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "load_metadata_pivot_to_bigquery",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_APPEND'"
+        }
+      }
+    ],
+    "edges": [
+      [
+        "init",
+        "check_data_metadata"
+      ],
+      [
+        "check_data_metadata",
+        "pause_task_metadata"
+      ],
+      [
+        "check_data_metadata",
+        "extract_metadata"
+      ],
+      [
+        "extract_metadata",
+        "load_metadata_to_bigquery"
+      ],
+      [
+        "load_metadata_to_bigquery",
+        "continue_after_metadata"
+      ],
+      [
+        "pause_task_metadata",
+        "continue_after_metadata"
+      ],
+      [
+        "continue_after_metadata",
+        "check_data_interaction_metadata"
+      ],
+      [
+        "check_data_interaction_metadata",
+        "pause_task_interaction_metadata"
+      ],
+      [
+        "check_data_interaction_metadata",
+        "extract_interaction_metadata"
+      ],
+      [
+        "extract_interaction_metadata",
+        "load_interaction_metadata_to_bigquery"
+      ],
+      [
+        "load_interaction_metadata_to_bigquery",
+        "continue_after_interaction_metadata"
+      ],
+      [
+        "pause_task_interaction_metadata",
+        "continue_after_interaction_metadata"
+      ],
+      [
+        "continue_after_interaction_metadata",
+        "check_data_metadata_pivot"
+      ],
+      [
+        "check_data_metadata_pivot",
+        "pause_task_metadata_pivot"
+      ],
+      [
+        "check_data_metadata_pivot",
+        "extract_metadata_pivot"
+      ],
+      [
+        "extract_metadata_pivot",
+        "load_metadata_pivot_to_bigquery"
+      ]
+    ],
+    "sql_files": 6
+  },
+  {
+    "slug": "postgres_interaction_answers",
+    "title": "PostgreSQL: respostas de interação e MERGE",
+    "dag_id": "demo_postgres_interaction_answers",
+    "original_schedule": [
+      "'0 4 * * *'"
+    ],
+    "tasks": [
+      {
+        "task": "init",
+        "operator": "EmptyOperator",
+        "parameters": {}
+      },
+      {
+        "task": "check_data_interaction_answers",
+        "operator": "BranchPythonOperator",
+        "parameters": {}
+      },
+      {
+        "task": "pause_task_interaction_answers",
+        "operator": "DummyOperator",
+        "parameters": {}
+      },
+      {
+        "task": "extract_interaction_answers",
+        "operator": "PostgresToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "load_interaction_answers_temp",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_TRUNCATE'"
+        }
+      },
+      {
+        "task": "merge_interactions_answers",
+        "operator": "BigQueryInsertJobOperator",
+        "parameters": {}
+      },
+      {
+        "task": "continue_after_interaction_answers",
+        "operator": "DummyOperator",
+        "parameters": {
+          "trigger_rule": "'all_done'"
+        }
+      }
+    ],
+    "edges": [
+      [
+        "init",
+        "check_data_interaction_answers"
+      ],
+      [
+        "check_data_interaction_answers",
+        "pause_task_interaction_answers"
+      ],
+      [
+        "check_data_interaction_answers",
+        "extract_interaction_answers"
+      ],
+      [
+        "merge_interactions_answers",
+        "continue_after_interaction_answers"
+      ],
+      [
+        "pause_task_interaction_answers",
+        "continue_after_interaction_answers"
+      ],
+      [
+        "load_interaction_answers_temp",
+        "merge_interactions_answers"
+      ],
+      [
+        "extract_interaction_answers",
+        "load_interaction_answers_temp"
+      ]
+    ],
+    "sql_files": 3
+  },
+  {
+    "slug": "mysql_questions_history",
+    "title": "MySQL: recorte histórico de respostas",
+    "dag_id": "demo_mysql_questions_history",
+    "original_schedule": [
+      "'@daily'"
+    ],
+    "tasks": [
+      {
+        "task": "init",
+        "operator": "EmptyOperator",
+        "parameters": {}
+      },
+      {
+        "task": "question_answer_mysql_to_gcs",
+        "operator": "MySQLToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "load_question_answer_to_bq",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_APPEND'"
+        }
+      },
+      {
+        "task": "question_answer_nps_mysql_to_gcs",
+        "operator": "MySQLToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "load_question_answer_nps_to_bq",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_APPEND'"
+        }
+      },
+      {
+        "task": "question_answer_csat_mysql_to_gcs",
+        "operator": "MySQLToGCSOperator",
+        "parameters": {
+          "export_format": "'json'"
+        }
+      },
+      {
+        "task": "load_question_answer_csat_to_bq",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'NEWLINE_DELIMITED_JSON'",
+          "write_disposition": "'WRITE_APPEND'"
+        }
+      },
+      {
+        "task": "final_status",
+        "operator": "EmptyOperator",
+        "parameters": {
+          "trigger_rule": "TriggerRule.ALL_DONE"
+        }
+      }
+    ],
+    "edges": [
+      [
+        "question_answer_mysql_to_gcs",
+        "load_question_answer_to_bq"
+      ],
+      [
+        "question_answer_nps_mysql_to_gcs",
+        "load_question_answer_nps_to_bq"
+      ],
+      [
+        "load_question_answer_csat_to_bq",
+        "final_status"
+      ],
+      [
+        "init",
+        "question_answer_mysql_to_gcs"
+      ],
+      [
+        "load_question_answer_to_bq",
+        "question_answer_nps_mysql_to_gcs"
+      ],
+      [
+        "question_answer_csat_mysql_to_gcs",
+        "load_question_answer_csat_to_bq"
+      ],
+      [
+        "load_question_answer_nps_to_bq",
+        "question_answer_csat_mysql_to_gcs"
+      ]
+    ],
+    "sql_files": 3
+  },
+  {
+    "slug": "gcs_csv_manual_load",
+    "title": "GCS: carga manual de CSV no BigQuery",
+    "dag_id": "demo_gcs_csv_manual_load",
+    "original_schedule": [
+      "None"
+    ],
+    "tasks": [
+      {
+        "task": "start",
+        "operator": "EmptyOperator",
+        "parameters": {}
+      },
+      {
+        "task": "load_csv_to_bigquery",
+        "operator": "GCSToBigQueryOperator",
+        "parameters": {
+          "source_format": "'CSV'",
+          "write_disposition": "'WRITE_TRUNCATE'"
+        }
+      }
+    ],
+    "edges": [
+      [
+        "start",
+        "load_csv_to_bigquery"
+      ]
+    ],
+    "sql_files": 0
+  },
+  {
+    "slug": "task_monitor_slack",
+    "title": "Monitoramento de tarefas externas e Slack",
+    "dag_id": "demo_task_monitor_slack",
+    "original_schedule": [
+      "'*/10 * * * *'"
+    ],
+    "tasks": [
+      {
+        "task": "start",
+        "operator": "EmptyOperator",
+        "parameters": {}
+      },
+      {
+        "task": "end",
+        "operator": "EmptyOperator",
+        "parameters": {}
+      },
+      {
+        "task": "f'watch_{dag_id}_{task_id}",
+        "operator": "ExternalTaskSensor",
+        "parameters": {}
+      }
+    ],
+    "edges": [
+      [
+        "monitor_group",
+        "end"
+      ],
+      [
+        "start",
+        "monitor_group"
+      ]
+    ],
+    "sql_files": 0
+  }
+]
